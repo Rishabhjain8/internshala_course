@@ -5,7 +5,7 @@ const router = express.Router();
 const { body, validationResult } = require('express-validator');
 
 
-router.post('/addCourse', [
+router.post('/addcourse', [
     body('title', 'Title length must be greater than 2').isLength({ min: 3 }),
 ], async (req, res) => {
     const errors = validationResult(req);
@@ -15,7 +15,7 @@ router.post('/addCourse', [
     try {
         let course = await Course.findOne({ title: req.body.title });
         if (course) {
-            return res.status(400).json({ error: "Sorry a course with this title already exists" })
+            return res.status(400).json({ error: "Course with this title already exists" })
         }
         const start_date = new Date(req.body.start_date);
         const end_date = new Date(req.body.end_date);
@@ -34,7 +34,7 @@ router.post('/addCourse', [
                 end_date: end_date
             });
         } else {
-            return res.send("End date cant be earlier than start date")
+            return res.send("End date can't be earlier than start date")
         }
         res.send(course);
 
@@ -45,7 +45,7 @@ router.post('/addCourse', [
     }
 })
 
-router.get('/getCourse', async (req, res) => {
+router.get('/getcourse', async (req, res) => {
     try {
         let course = await Course.find();
         res.send(course)
@@ -55,14 +55,14 @@ router.get('/getCourse', async (req, res) => {
     }
 });
 
-router.get("/enrollUserList", async (req, res) => {
+router.get("/enrolluserlist", async (req, res) => {
     const courseTitle = req.body.title;
     let course = await User.findOne({ title: courseTitle });
     if (!course) {
         return res.send("User is not registered")
     }
 
-    res.send(course.enrolledStudents);
+    res.send(course.enrollStudents);
 });
 
 

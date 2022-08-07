@@ -1,9 +1,8 @@
-const express = require("express");
 const mongoose = require("mongoose");
 
 function connectDB() {
     mongoose.connect(process.env.mongoURI).then(() => {
-        console.log("database connected");
+        console.log("MongoDB is connected successfully");
     }).catch((err) => {
         console.log(err);
     })

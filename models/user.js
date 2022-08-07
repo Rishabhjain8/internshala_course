@@ -14,7 +14,7 @@ const userSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    enrolledCourses:[{
+    enrollCourses:[{
         type: String,
         ref:'Course'
     }]

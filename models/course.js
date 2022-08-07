@@ -17,15 +17,11 @@ const courseSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    enrolledStudents:[ {
+    enrollStudents:[ {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     }]
 });
-
-courseSchema.methods.fn = async () => {
-    return await start_date < end_date;
-}
 
 const Course = mongoose.model("Course", courseSchema);
 

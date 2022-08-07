@@ -4,7 +4,7 @@ const Course = require('../models/course');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
 
-router.post('/addUser', [
+router.post('/adduser', [
     body('name', 'Enter a valid name').isLength({ min: 3 }),
     body('email', 'Enter a valid email').isEmail()
 ], async (req, res) => {
@@ -16,7 +16,7 @@ router.post('/addUser', [
     try {
         let user = await User.findOne({ email: req.body.email });
         if (user) {
-            return res.status(400).json({ error: "Sorry a user with this email already exists" })
+            return res.status(400).json({ error: "Userwith this email already exists" })
         }
 
         user = await User.create({
@@ -34,7 +34,7 @@ router.post('/addUser', [
 })
 
 
-router.get('/getUser', async (req, res) => {
+router.get('/getuser', async (req, res) => {
     try {
         let user = await User.find();
         res.send(user)
@@ -45,19 +45,15 @@ router.get('/getUser', async (req, res) => {
 });
 
 
-router.post('/enroll/:id', async (req, res) => {
-    // getting id and email from user
+router.post('/enrollcourse/:id', async (req, res) => {
     let courseId = req.params.id;
-    let userEmail = req.body.email;
+    let email = req.body.email;
 
-
-    // Finding user and course
-    let user = await User.findOne({ email: userEmail });
+    let user = await User.findOne({ email: email });
     if (!user) {
         return res.send("User is not registered")
     }
 
-    // Assigning some variables
     let userId = user._id;
     let previousCourses = user.enrolledCourses;
     let flag = false;
@@ -65,10 +61,9 @@ router.post('/enroll/:id', async (req, res) => {
     
     let course = await Course.findById(courseId);    
     let courseEnroll = await Course.findByIdAndUpdate(courseId, {
-        enrolledStudents: [...course.enrolledStudents, userId]
+        enrollStudents: [...course.enrollStudents, userId]
     })
         
-    // Checking for duplicates enrollments
     previousCourses.forEach(element => {
         if (element.toString() === course.title.toString()) {
             flag = true;
@@ -76,24 +71,21 @@ router.post('/enroll/:id', async (req, res) => {
     });
 
     let now = Date.now();
-    console.log(now);
-    console.log(Date.parse(course.start_date));
 
-    // Checking for dates
     if (Date.parse(course.start_date) < now) {
         dateFlag = true;
     }
 
-    if (dateFlag === true) {
+    if (dateFlag) {
         dateFlag = false;
-        return res.send("You are late")
+        return res.send("Sorry now you can't register");
     }
 
-    if (flag === false) {
+    if (!flag) {
         let userEnroll = await User.findByIdAndUpdate(userId, {
-            enrolledCourses: [...user.enrolledCourses, course.title]
+            enrollCourses: [...user.enrollCourses, course.title]
         })
-        let updatedUser = await User.findOne({ email: userEmail });
+        let updatedUser = await User.findOne({ email: email });
 
         return await res.send(updatedUser);
     } else {
@@ -103,14 +95,14 @@ router.post('/enroll/:id', async (req, res) => {
 
 })
 
-router.get("/enrollCoursesList", async (req, res) => {
-    const userEmail = req.body.email;
-    let user = await User.findOne({ email: userEmail });
+router.get("/enrollcourseist", async (req, res) => {
+    const email = req.body.email;
+    let user = await User.findOne({ email: email });
     if (!user) {
-        return res.send("User is not registered")
+        return res.send("Please sign up");
     }
 
-    res.send(user.enrolledCourses);
+    res.send(user.enrollCourses);
 });
 
 module.exports = router;
