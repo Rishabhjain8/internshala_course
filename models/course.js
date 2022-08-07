@@ -23,10 +23,6 @@ const courseSchema = mongoose.Schema({
     }]
 });
 
-courseSchema.methods.fn = async () => {
-    return await start_date < end_date;
-}
-
 const Course = mongoose.model("Course", courseSchema);
 
 module.exports = Course;
